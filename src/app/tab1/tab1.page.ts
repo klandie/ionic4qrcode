@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
+import { BarcodeScanner, BarcodeScannerOptions } from '@ionic-native/barcode-scanner/ngx';
 
 @Component({
   selector: 'app-tab1',
@@ -8,35 +8,15 @@ import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner/ngx';
 })
 export class Tab1Page {
   message:any;
-  constructor(private qrScanner: QRScanner){
+  constructor(private barcodeScanner: BarcodeScanner){
 
   }
   scanne(){
-    // Optionally request the permission early
-this.qrScanner.prepare()
-.then((status: QRScannerStatus) => {
-   if (status.authorized) {
-     // camera permission was granted
-
-
-     // start scanning
-     let scanSub = this.qrScanner.scan().subscribe((text: string) => {
-       console.log('Scanned something', text);
-       this.message = text;
-
-       this.qrScanner.hide(); // hide camera preview
-       scanSub.unsubscribe(); // stop scanning
+    this.barcodeScanner.scan().then(barcodeData => {
+      console.log('Barcode data', barcodeData);
+      this.message = barcodeData.text;
+     }).catch(err => {
+         console.log('Error', err);
      });
-
-   } else if (status.denied) {
-     // camera permission was permanently denied
-     // you must use QRScanner.openSettings() method to guide the user to the settings page
-     // then they can grant the permission from there
-   } else {
-     // permission was denied, but not permanently. You can ask for permission again at a later time.
-   }
-})
-.catch((e: any) => console.log('Error is', e));
-
   }
 }
